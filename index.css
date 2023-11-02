@@ -11,13 +11,30 @@ body {
   aspect-ratio: 1;
 }
 
-.chessboard__tile {
+.chessboard__square {
   border: 2px solid black;
+  position: relative;
 }
 
-.chessboard__tile--black {
+.chessboard__path-indicator {
+  background-color: blue;
+  color: white;
+  font-weight: bold;
+  font-size: 2rem;
+  position: absolute;
+  left: 0; 
+  right: 0; 
+  margin-left: auto; 
+  margin-right: auto; 
+  width: 100%;
+}
+  
+/* Need a specific
+
+
+.chessboard__square--black {
   background-color: white;
 }
-.chessboard__tile--white {
+.chessboard__square--white {
   background-color: black;
 }

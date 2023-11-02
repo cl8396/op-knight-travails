@@ -16,6 +16,7 @@ export default class Chessboard {
     this.size = this.checkSize(size);
     this.squares = this.generateSquares(this.size);
     this.graph = this.generateMovesGraph(this.squares);
+    this.selectedSquares = [];
   }
 
   // check if requested size will produce a valid board
@@ -80,6 +81,15 @@ export default class Chessboard {
     }
   };
 
+  selectSquare(coord) {
+    this.selectedSquares.push(coord);
+    if (this.selectedSquares.length === 2) {
+      let path = this.knightMoves(...this.selectedSquares);
+      this.selectedSquares = [];
+      return path;
+    }
+  }
+
   knightMoves(startPos, endPos) {
     let startNode = this.squares.find((tile) => {
       return tile[0] === startPos[0] && tile[1] === startPos[1];
@@ -90,6 +100,8 @@ export default class Chessboard {
     });
 
     let path = this.graph.findPath(startNode, endNode);
+
+    return path;
 
     let output = 'Shortest path is: ';
 
