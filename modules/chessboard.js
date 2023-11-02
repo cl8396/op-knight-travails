@@ -13,16 +13,26 @@ const MOVE_OFFSETS = [
 
 export default class Chessboard {
   constructor(size = 64) {
-    this.squares = this.generateSquares(size);
+    this.size = this.checkSize(size);
+    this.squares = this.generateSquares(this.size);
     this.graph = this.generateMovesGraph(this.squares);
+  }
+
+  // check if requested size will produce a valid board
+  checkSize(size) {
+    if (!Number.isInteger(Math.sqrt(size))) {
+      alert(
+        'error. selected size is not valid. please enter a perfect square. defaulting to standard board size'
+      );
+      return 64;
+    } else {
+      return size;
+    }
   }
 
   // populate board with squares ie coordinates
   generateSquares(size) {
-    if (!Number.isInteger(Math.sqrt(size))) {
-      throw new Error('bad number, not a perfect square');
-    }
-    // calculate the extremity of the squares
+    // calculate the extremity of axis.
     const maxPos = Math.sqrt(size) - 1;
 
     let squares = [];
