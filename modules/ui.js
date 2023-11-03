@@ -4,11 +4,13 @@ export default class UI {
     this.boardSquares = board.squares;
     this.boardSize = board.size;
     this.boardGrid = document.querySelector('.chessboard');
+    this.instruction = document.querySelector('.instruction-js');
   }
 
   init() {
     this.drawBoard();
     this.setupEventListeners();
+    this.updateInstruction();
   }
 
   get noSquaresInAxis() {
@@ -42,8 +44,12 @@ export default class UI {
     this.boardGrid.addEventListener('click', (e) => {
       this.clearPath();
       let selectedCoords = this.handleBoardClick(e);
+
       alert(`selected ${selectedCoords}`);
       let path = this.board.selectSquare(selectedCoords);
+
+      this.updateInstruction();
+
       if (path) {
         this.drawPath(path);
       }
@@ -55,6 +61,20 @@ export default class UI {
     let x = square.getAttribute('x');
     let y = square.getAttribute('y');
     return [parseInt(x), parseInt(y)];
+  }
+
+  updateInstruction() {
+    let selectedSquares = this.board.selectedSquares;
+    console.log(selectedSquares);
+
+    switch (selectedSquares.length) {
+      case 0:
+        this.instruction.textContent = 'Select starting square';
+        break;
+      case 1:
+        this.instruction.textContent = 'Select target square';
+        break;
+    }
   }
 
   drawPath(path) {
