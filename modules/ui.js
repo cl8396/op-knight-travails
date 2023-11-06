@@ -5,6 +5,7 @@ export default class UI {
     this.boardSize = board.size;
     this.boardGrid = document.querySelector('.chessboard');
     this.instruction = document.querySelector('.instruction-js');
+    this.isDrawingPath = false;
   }
 
   init() {
@@ -42,19 +43,28 @@ export default class UI {
 
   setupEventListeners() {
     this.boardGrid.addEventListener('click', (e) => {
-      this.clearPath();
-      let selectedCoords = this.handleBoardClick(e);
-
-      let path = this.board.selectSquare(selectedCoords);
-
-      this.displaySelectedSquares();
-
-      if (path) {
-        this.drawPath(path);
-        this.board.clearSelectedSquares();
+      if (this.isDrawingPath === true) {
+        return;
       }
 
-      this.updateInstruction();
+      this.clearPath();
+
+      if (e.target.classList.contains('chessboard-square-js')) {
+        let selectedCoords = this.handleBoardClick(e);
+
+        let path = this.board.selectSquare(selectedCoords);
+
+        this.displaySelectedSquares();
+
+        if (path) {
+          this.drawPath(path);
+          this.board.clearSelectedSquares();
+        }
+
+        this.updateInstruction();
+      } else {
+        return;
+      }
     });
   }
 
@@ -72,6 +82,8 @@ export default class UI {
 
   handleBoardClick(e) {
     let square = e.target;
+    console.log(square);
+
     let x = square.getAttribute('x');
     let y = square.getAttribute('y');
     return [parseInt(x), parseInt(y)];
@@ -110,10 +122,26 @@ export default class UI {
   }
 
   drawPath(path) {
+    let interval = 100; // delay in ms between drawing each step
+    this.isDrawingPath = true; // whilst true user not able to make any inputs.
+    let promise = Promise.resolve();
+
     path.forEach((step, counter) => {
-      if (counter !== 0 && counter !== path.length - 1) {
-        this.updateSquare(step, counter + 1);
-      }
+      // add delays between steps of path drawing on board
+      promise = promise.then(() => {
+        console.log('drawing square');
+        if (counter !== 0 && counter !== path.length - 1) {
+          this.updateSquare(step, counter + 1);
+        }
+        return new Promise((resolve) => {
+          setTimeout(resolve, interval);
+        });
+      });
+    });
+
+    promise.then(() => {
+      // after execution of path drawing 'animation' completes allow the user to make inputs once again
+      this.isDrawingPath = false;
     });
   }
 
