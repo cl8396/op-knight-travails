@@ -45,13 +45,27 @@ export default class UI {
       this.clearPath();
       let selectedCoords = this.handleBoardClick(e);
 
-      alert(`selected ${selectedCoords}`);
       let path = this.board.selectSquare(selectedCoords);
 
-      this.updateInstruction();
+      this.displaySelectedSquares();
 
       if (path) {
         this.drawPath(path);
+        this.board.clearSelectedSquares();
+      }
+
+      this.updateInstruction();
+    });
+  }
+
+  displaySelectedSquares() {
+    let moves = this.board.selectedSquares;
+
+    moves.forEach((move, index) => {
+      if (index === 0) {
+        this.updateSquare(move, 'Start');
+      } else if (index === 1) {
+        this.updateSquare(move, 'End');
       }
     });
   }
@@ -65,7 +79,6 @@ export default class UI {
 
   updateInstruction() {
     let selectedSquares = this.board.selectedSquares;
-    console.log(selectedSquares);
 
     switch (selectedSquares.length) {
       case 0:
@@ -77,34 +90,30 @@ export default class UI {
     }
   }
 
-  drawPath(path) {
+  updateSquare(coords, content) {
     let allSquares = [...document.querySelectorAll('.chessboard-square-js')];
-
-    path.forEach((step, counter) => {
-      let squareElement = allSquares.find((square) => {
-        if (
-          square.getAttribute('x') == step[0] &&
-          square.getAttribute('y') == step[1]
-        ) {
-          return square;
-        }
-      });
-
-      let text = document.createElement('span');
-      text.classList.add('chessboard__path-indicator');
-      text.classList.add('path-js');
-      switch (counter) {
-        case 0:
-          text.textContent = 'start';
-          break;
-        case path.length - 1:
-          text.textContent = 'end';
-          break;
-        default:
-          text.textContent = counter + 1;
-          break;
+    let squareElement = allSquares.find((square) => {
+      if (
+        square.getAttribute('x') == coords[0] &&
+        square.getAttribute('y') == coords[1]
+      ) {
+        return square;
       }
-      squareElement.appendChild(text);
+    });
+
+    let text = document.createElement('span');
+    text.classList.add('chessboard__path-indicator');
+    text.classList.add('path-js');
+    text.textContent = content;
+
+    squareElement.appendChild(text);
+  }
+
+  drawPath(path) {
+    path.forEach((step, counter) => {
+      if (counter !== 0 && counter !== path.length - 1) {
+        this.updateSquare(step, counter + 1);
+      }
     });
   }
 

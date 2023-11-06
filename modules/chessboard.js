@@ -85,9 +85,12 @@ export default class Chessboard {
     this.selectedSquares.push(coord);
     if (this.selectedSquares.length === 2) {
       let path = this.knightMoves(...this.selectedSquares);
-      this.selectedSquares = [];
       return path;
     }
+  }
+
+  clearSelectedSquares() {
+    this.selectedSquares = [];
   }
 
   knightMoves(startPos, endPos) {
