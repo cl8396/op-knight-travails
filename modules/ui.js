@@ -20,7 +20,7 @@ export default class UI {
 
   drawBoard() {
     // add correct styling to chessboard
-    this.boardGrid.style = `grid-template-columns: repeat(${this.noSquaresInAxis}, 1fr); background-color: red;`;
+    this.boardGrid.style = `grid-template-columns: repeat(${this.noSquaresInAxis}, 1fr);`;
 
     // create Squares
     const MAX_AXIS_VAL = this.noSquaresInAxis - 1;
@@ -33,6 +33,14 @@ export default class UI {
           let square = document.createElement('div');
           square.classList.add('chessboard__square');
           square.classList.add('chessboard-square-js');
+
+          let sumCoords = coordinate[0] + coordinate[1];
+          if (sumCoords % 2 !== 0) {
+            square.classList.add('chessboard__square--white');
+          } else {
+            square.classList.add('chessboard__square--black');
+          }
+
           square.setAttribute('x', coordinate[0]);
           square.setAttribute('y', coordinate[1]);
           square.innerHTML = `${coordinate[0]},${coordinate[1]}`;
