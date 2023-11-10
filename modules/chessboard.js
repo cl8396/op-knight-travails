@@ -105,13 +105,5 @@ export default class Chessboard {
     let path = this.graph.findPath(startNode, endNode);
 
     return path;
-
-    let output = 'Shortest path is: ';
-
-    path.forEach((tile) => {
-      output += `(${tile}) `;
-    });
-
-    console.log(output);
   }
 }
