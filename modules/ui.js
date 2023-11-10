@@ -49,30 +49,34 @@ export default class UI {
     }
   }
 
+  handleBoardClick(e) {
+    if (this.isDrawingPath === true) {
+      return;
+    }
+
+    this.clearPath();
+
+    if (e.target.classList.contains('chessboard-square-js')) {
+      let selectedCoords = this.getCoords(e);
+
+      let path = this.board.selectSquare(selectedCoords);
+
+      this.displaySelectedSquares();
+
+      if (path) {
+        this.drawPath(path);
+        this.board.clearSelectedSquares();
+      }
+
+      this.updateInstruction();
+    } else {
+      return;
+    }
+  }
+
   setupEventListeners() {
     this.boardGrid.addEventListener('click', (e) => {
-      if (this.isDrawingPath === true) {
-        return;
-      }
-
-      this.clearPath();
-
-      if (e.target.classList.contains('chessboard-square-js')) {
-        let selectedCoords = this.handleBoardClick(e);
-
-        let path = this.board.selectSquare(selectedCoords);
-
-        this.displaySelectedSquares();
-
-        if (path) {
-          this.drawPath(path);
-          this.board.clearSelectedSquares();
-        }
-
-        this.updateInstruction();
-      } else {
-        return;
-      }
+      this.handleBoardClick(e);
     });
   }
 
@@ -88,7 +92,7 @@ export default class UI {
     });
   }
 
-  handleBoardClick(e) {
+  getCoords(e) {
     let square = e.target;
     console.log(square);
 
