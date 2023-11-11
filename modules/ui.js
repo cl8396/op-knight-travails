@@ -6,6 +6,8 @@ export default class UI {
     this.boardGrid = document.querySelector('.chessboard');
     this.instruction = document.querySelector('.instruction-js');
     this.isDrawingPath = false;
+    this.selectedSquares = [];
+    this.path = [];
   }
 
   init() {
@@ -40,7 +42,6 @@ export default class UI {
           } else {
             square.classList.add('chessboard__square--black');
           }
-
           square.setAttribute('x', coordinate[0]);
           square.setAttribute('y', coordinate[1]);
           square.innerHTML = `${coordinate[0]},${coordinate[1]}`;
@@ -50,71 +51,37 @@ export default class UI {
   }
 
   handleBoardClick(e) {
+    // stops the user interrupting path being displayed
     if (this.isDrawingPath === true) {
       return;
     }
-
-    this.clearPath();
+    // stops the user selecting same square twice
+    if (e.target.hasAttribute('selected')) {
+      return;
+    }
+    // removes previous path and selected squares
+    if (this.selectedSquares.length === 0) {
+      this.clearBoard();
+    }
 
     if (e.target.classList.contains('chessboard-square-js')) {
       let selectedCoords = this.getCoords(e);
 
-      let path = this.board.selectSquare(selectedCoords);
-
-      this.displaySelectedSquares();
-
-      if (path) {
-        this.drawPath(path);
-        this.board.clearSelectedSquares();
-      }
-
+      this.selectSquare(selectedCoords);
       this.updateInstruction();
-    } else {
-      return;
-    }
-  }
 
-  setupEventListeners() {
-    this.boardGrid.addEventListener('click', (e) => {
-      this.handleBoardClick(e);
-    });
-  }
-
-  displaySelectedSquares() {
-    let moves = this.board.selectedSquares;
-
-    moves.forEach((move, index) => {
-      if (index === 0) {
-        this.updateSquare(move, 'Start');
-      } else if (index === 1) {
-        this.updateSquare(move, 'End');
+      if (this.selectedSquares.length === 2) {
+        this.path = this.board.knightMoves(...this.selectedSquares);
+        this.drawPath(this.path);
+        this.clearSelectedSquares();
+        this.updateInstruction();
+      } else {
+        return;
       }
-    });
-  }
-
-  getCoords(e) {
-    let square = e.target;
-    console.log(square);
-
-    let x = square.getAttribute('x');
-    let y = square.getAttribute('y');
-    return [parseInt(x), parseInt(y)];
-  }
-
-  updateInstruction() {
-    let selectedSquares = this.board.selectedSquares;
-
-    switch (selectedSquares.length) {
-      case 0:
-        this.instruction.textContent = 'Select starting square';
-        break;
-      case 1:
-        this.instruction.textContent = 'Select target square';
-        break;
     }
   }
 
-  updateSquare(coords, content) {
+  getSquare(coords) {
     let allSquares = [...document.querySelectorAll('.chessboard-square-js')];
     let squareElement = allSquares.find((square) => {
       if (
@@ -124,26 +91,73 @@ export default class UI {
         return square;
       }
     });
+    return squareElement;
+  }
 
+  selectSquare(coords) {
+    let squareElement = this.getSquare(coords);
+
+    squareElement.setAttribute('selected', true);
+
+    if (this.selectedSquares.push(coords) === 1) {
+      this.updateSquare(squareElement, 'start');
+    } else {
+      this.updateSquare(squareElement, 'end');
+    }
+  }
+
+  clearSelectedSquares() {
+    this.selectedSquares.forEach((square) => {
+      this.getSquare(square).removeAttribute('selected');
+    });
+    this.selectedSquares = [];
+  }
+
+  setupEventListeners() {
+    this.boardGrid.addEventListener('click', (e) => {
+      this.handleBoardClick(e);
+    });
+  }
+
+  getCoords(e) {
+    let square = e.target;
+
+    let x = square.getAttribute('x');
+    let y = square.getAttribute('y');
+    return [parseInt(x), parseInt(y)];
+  }
+
+  updateInstruction() {
+    switch (this.selectedSquares.length) {
+      case 0:
+        this.instruction.textContent = 'Select starting square';
+        break;
+      case 1:
+        this.instruction.textContent = 'Select target square';
+        break;
+    }
+  }
+
+  updateSquare(square, content) {
     let text = document.createElement('span');
     text.classList.add('chessboard__path-indicator');
     text.classList.add('path-js');
     text.textContent = content;
 
-    squareElement.appendChild(text);
+    square.appendChild(text);
   }
 
-  drawPath(path) {
+  drawPath() {
     let interval = 100; // delay in ms between drawing each step
     this.isDrawingPath = true; // whilst true user not able to make any inputs.
     let promise = Promise.resolve();
 
-    path.forEach((step, counter) => {
+    this.path.forEach((step, counter) => {
       // add delays between steps of path drawing on board
       promise = promise.then(() => {
-        console.log('drawing square');
-        if (counter !== 0 && counter !== path.length - 1) {
-          this.updateSquare(step, counter + 1);
+        let squareElement = this.getSquare(step);
+        if (counter !== 0 && counter !== this.path.length - 1) {
+          this.updateSquare(squareElement, counter + 1);
         }
         return new Promise((resolve) => {
           setTimeout(resolve, interval);
@@ -157,7 +171,7 @@ export default class UI {
     });
   }
 
-  clearPath() {
+  clearBoard() {
     let allSquares = [...document.querySelectorAll('.chessboard-square-js')];
 
     allSquares.forEach((square) => {
@@ -167,3 +181,17 @@ export default class UI {
     });
   }
 }
+
+/* 
+
+PLACING THE SELECTED SQUARES INTO THE UI MODULE INSTEAD OF CHESSBOARD 
+
+then we can pass the selected squares into knight moves to obtain the path.
+
+we can use the ui's selected squares to indicate
+
+create a path parameter in the ui.
+
+
+
+*/
