@@ -100,10 +100,30 @@ export default class UI {
     squareElement.setAttribute('selected', true);
 
     if (this.selectedSquares.push(coords) === 1) {
-      this.updateSquare(squareElement, 'start');
+      this.addIcon(squareElement, 'start');
     } else {
-      this.updateSquare(squareElement, 'end');
+      this.addIcon(squareElement, 'end');
     }
+  }
+
+  addIcon(square, type) {
+    let svgName;
+    switch (type) {
+      case 'start':
+        svgName = 'flag-start.svg';
+        break;
+      case 'end':
+        svgName = 'flag-end.svg';
+        break;
+      default:
+        svgName = `${type}.svg`;
+    }
+
+    let icon = document.createElement('img');
+    icon.classList.add('chessboard__selection-icon');
+    icon.src = `img/${svgName}`;
+
+    square.appendChild(icon);
   }
 
   clearSelectedSquares() {
@@ -138,15 +158,6 @@ export default class UI {
     }
   }
 
-  updateSquare(square, content) {
-    let text = document.createElement('span');
-    text.classList.add('chessboard__path-indicator');
-    text.classList.add('path-js');
-    text.textContent = content;
-
-    square.appendChild(text);
-  }
-
   drawPath() {
     let interval = 100; // delay in ms between drawing each step
     this.isDrawingPath = true; // whilst true user not able to make any inputs.
@@ -157,7 +168,7 @@ export default class UI {
       promise = promise.then(() => {
         let squareElement = this.getSquare(step);
         if (counter !== 0 && counter !== this.path.length - 1) {
-          this.updateSquare(squareElement, counter + 1);
+          this.addIcon(squareElement, counter + 1);
         }
         return new Promise((resolve) => {
           setTimeout(resolve, interval);
