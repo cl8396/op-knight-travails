@@ -60,3 +60,17 @@ body {
   position: relative;
   top: 23%;
 }
+
+@media screen and (min-width: 768px) {
+  .chessboard {
+    width: 70%;
+    font-size: 1.6rem;
+  }
+}
+
+@media screen and (min-width: 1140px) {
+  .chessboard {
+    width: 50%;
+    font-size: 1.6rem;
+  }
+}
