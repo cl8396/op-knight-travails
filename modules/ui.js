@@ -3,11 +3,39 @@ export default class UI {
     this.board = board;
     this.boardSquares = board.squares;
     this.boardSize = board.size;
-    this.boardGrid = document.querySelector('.chessboard');
+    this.boardElement = document.querySelector('.chessboard');
     this.instruction = document.querySelector('.instruction-js');
     this.isDrawingPath = false;
     this.selectedSquares = [];
     this.path = [];
+    this.ALPHABET = [
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H',
+      'I',
+      'J',
+      'K',
+      'L',
+      'M',
+      'N',
+      'O',
+      'P',
+      'Q',
+      'R',
+      'S',
+      'T',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
+      'Z',
+    ];
   }
 
   init() {
@@ -22,7 +50,9 @@ export default class UI {
 
   drawBoard() {
     // add correct styling to chessboard
-    this.boardGrid.style = `grid-template-columns: repeat(${this.noSquaresInAxis}, 1fr);`;
+    let boardGrid = document.createElement('div');
+    boardGrid.style = `grid-template-columns: repeat(${this.noSquaresInAxis}, 1fr);`;
+    boardGrid.classList.add('chessboard__grid');
 
     // create Squares
     const MAX_AXIS_VAL = this.noSquaresInAxis - 1;
@@ -44,10 +74,51 @@ export default class UI {
           }
           square.setAttribute('x', coordinate[0]);
           square.setAttribute('y', coordinate[1]);
-          square.innerHTML = `${coordinate[0]},${coordinate[1]}`;
-          this.boardGrid.appendChild(square);
+          boardGrid.appendChild(square);
         });
     }
+
+    this.boardElement.appendChild(boardGrid);
+
+    // create column labels
+    let colLabelContainer = document.createElement('div');
+    colLabelContainer.classList.add('chessboard__col-label-container');
+    colLabelContainer.style = `grid-template-columns: repeat(${this.noSquaresInAxis}, 1fr);`;
+
+    for (let i = 0; i <= MAX_AXIS_VAL; i++) {
+      let label = document.createElement('p');
+      label.textContent = this.ALPHABET[i];
+      label.style = 'margin: auto;';
+      colLabelContainer.appendChild(label);
+    }
+
+    this.boardElement.appendChild(colLabelContainer);
+
+    // create row labels
+    let rowLabelContainer = document.createElement('div');
+    rowLabelContainer.classList.add('chessboard__row-label-container');
+    rowLabelContainer.style = `grid-template-rows: repeat(${this.noSquaresInAxis}, 1fr);`;
+
+    for (let i = 0; i <= MAX_AXIS_VAL; i++) {
+      let label = document.createElement('p');
+      label.textContent = MAX_AXIS_VAL + 1 - i;
+      rowLabelContainer.appendChild(label);
+    }
+
+    this.boardElement.appendChild(rowLabelContainer);
+
+    /*
+
+    Is this a bad idea? Lots of additional elements are created. They get deleted when the board clears. Feels overly encumbersome for a simple label for each column and row
+    Maybe it would be better to generate the row and column labels independently in their own container which is then attached to the chessboard grid. As long as the container is the same width/length as the chessboard container, then display flex should be fine for spacing.
+
+     For each value of X (ie 0 - 7) generate an alphabet letter (ABCDEFGH)
+     @ the square with coordinate [x, 0], create an absolutely positioned letter corresponsing to that coordinate
+
+     For each value of y (ie 0 - 7)
+     @ the sqaure with coordinate [0, y], create an absolutely positioned number corresponsing to that coordinate
+
+     */
   }
 
   handleBoardClick(e) {
@@ -134,7 +205,7 @@ export default class UI {
   }
 
   setupEventListeners() {
-    this.boardGrid.addEventListener('click', (e) => {
+    this.boardElement.addEventListener('click', (e) => {
       this.handleBoardClick(e);
     });
   }

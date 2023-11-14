@@ -1,15 +1,23 @@
 body {
   width: 100%;
   height: 100vh;
+  background-color: darkgray;
   display: grid;
   place-items: center;
-  background-color: darkgray;
 }
+
 .chessboard {
-  display: grid;
-  width: 50%;
   aspect-ratio: 1;
+  width: 90%;
+  /* border: 5px solid red; */
+  position: relative;
+  font-size: 1.2rem;
+}
+
+.chessboard__grid {
+  display: grid;
   border: 4px solid black;
+  height: 100%;
 }
 .chessboard__square {
   /* border: 2px solid black; */
@@ -26,23 +34,29 @@ body {
   color: white;
 }
 
-.chessboard__path-indicator {
-  background-color: blue;
-  color: white;
-  font-weight: bold;
-  font-size: 2rem;
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;
-}
-
 .chessboard__selection-icon {
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
   filter: invert(1);
+}
+
+.chessboard__col-label-container {
+  display: grid;
+  position: absolute;
+  width: 100%;
+}
+
+.chessboard__row-label-container {
+  display: grid;
+  position: absolute;
+  top: 0;
+  left: -4%;
+  height: 100%;
+}
+
+.chessboard__row-label-container > * {
+  position: relative;
+  top: 23%;
 }
